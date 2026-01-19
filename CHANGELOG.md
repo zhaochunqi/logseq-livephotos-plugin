@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.0...v1.3.1) (2026-01-19)
+
+
+### Bug Fixes
+
+* Configure semantic-release to upload plugin zip as release asset ([298704e](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/298704ec5f12d03fd720e38e12d5df5dbb91c0be))
+
 # [1.3.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.2.1...v1.3.0) (2026-01-19)
 
 
