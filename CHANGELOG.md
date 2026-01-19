@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.2.0...v1.2.1) (2026-01-19)
+
+
+### Bug Fixes
+
+* Add zip creation step for release workflow ([e20b21c](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/e20b21c2a3523f4e4a176890761fd0f49a373164))
+
 # [1.2.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.1.0...v1.2.0) (2026-01-19)
 
 
