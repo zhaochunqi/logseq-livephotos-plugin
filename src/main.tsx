@@ -1,5 +1,4 @@
 import "@logseq/libs";
-
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import App from "./App";
@@ -12,15 +11,52 @@ const css = (t, ...args) => String.raw(t, ...args);
 
 const pluginId = PL.id;
 
+// Helper to load script in parent document
+const loadLivePhotosKit = async () => {
+  const doc = parent.document;
+  if ((parent.window as any).LivePhotosKit) return Promise.resolve();
+
+  return new Promise<void>((resolve, reject) => {
+    if (doc.getElementById("livephotoskit-script")) {
+      // already loading?
+      const existingScript = doc.getElementById("livephotoskit-script") as HTMLScriptElement;
+      if (existingScript.dataset.loaded === "true") {
+        resolve();
+      } else {
+        existingScript.addEventListener("load", () => resolve());
+        existingScript.addEventListener("error", reject);
+      }
+      return;
+    }
+
+    const script = doc.createElement("script");
+    script.id = "livephotoskit-script";
+    script.src = "https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js";
+    script.async = true;
+    script.dataset.loaded = "false";
+
+    script.onload = () => {
+      script.dataset.loaded = "true";
+      resolve();
+    };
+    script.onerror = reject;
+    doc.head.appendChild(script);
+  });
+};
+
 function main() {
   console.info(`#${pluginId}: MAIN`);
-  const root = ReactDOM.createRoot(document.getElementById("app")!);
 
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  // Setup UI but don't crash if root not found (though it should be)
+  const appContainer = document.getElementById("app");
+  if (appContainer) {
+    const root = ReactDOM.createRoot(appContainer);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  }
 
   function createModel() {
     return {
@@ -56,6 +92,56 @@ function main() {
         <div class="${openIconName}">⚙️</div>
     </a>    
 `,
+  });
+
+  logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
+    const [type, photoSrc, videoSrc] = payload.arguments;
+    if (type !== ":live-photo" || !photoSrc || !videoSrc) return;
+
+    // Load the library in the parent context if needed
+    try {
+      await loadLivePhotosKit();
+    } catch (e) {
+      console.error("Failed to load LivePhotosKit", e);
+      return;
+    }
+
+    // We don't use provideUI here to avoid complexity. We render directly into the slot.
+    // The slot is an element in the main Logseq DOM.
+    const slotEl = parent.document.getElementById(slot);
+    if (!slotEl) return;
+
+    // Clear slot
+    slotEl.innerHTML = "";
+    slotEl.style.width = "100%";
+    slotEl.style.height = "auto";
+    slotEl.style.minHeight = "300px"; // Provide some default height
+    slotEl.style.display = "block";
+
+    // Create a container for the player
+    const container = parent.document.createElement("div");
+    container.style.width = "100%";
+    container.style.height = "500px";
+    container.style.position = "relative";
+    slotEl.appendChild(container);
+
+    // Initialize player using the PARENT window's LivePhotosKit instance
+    const LPK = (parent.window as any).LivePhotosKit;
+
+    if (LPK && LPK.Player) {
+      try {
+        const player = LPK.Player(container);
+        player.photoSrc = photoSrc;
+        player.videoSrc = videoSrc;
+        player.showsNativeControls = true;
+      } catch (err) {
+        console.error("LivePhotosKit Player init error:", err);
+        slotEl.innerHTML = `<div style="color:red">Error initializing Live Photo: ${err}</div>`;
+      }
+    } else {
+      console.error("LivePhotosKit not found on parent window");
+      slotEl.innerHTML = `<div style="color:red">LivePhotosKit library not loaded.</div>`;
+    }
   });
 }
 
