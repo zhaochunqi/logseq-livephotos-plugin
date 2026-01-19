@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.2.1...v1.3.0) (2026-01-19)
+
+
+### Features
+
+* Add release asset upload for plugin zip file ([4bca9ad](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/4bca9ad87c25515b1f893379741ea961806d32bd))
+
 ## [1.2.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.2.0...v1.2.1) (2026-01-19)
 
 
