@@ -1,6 +1,6 @@
 {
   "name": "logseq-livephotos-plugin",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "main": "dist/index.html",
   "description": "Add live photos support to Logseq with enhanced media handling.",
   "author": "zhaochunqi",
@@ -44,7 +44,7 @@
     "vite-plugin-logseq": "1.1.2"
   },
   "logseq": {
-    "id": "_zhaochunqi-logseq-livephotos-plugin",
+    "id": "logseq-livephotos-plugin",
     "icon": "./logo.svg"
   }
 }
