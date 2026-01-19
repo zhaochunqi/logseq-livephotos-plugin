@@ -39,6 +39,15 @@ function main() {
   console.info(`#${pluginId}: MAIN`);
 
   logseq.App.onMacroRendererSlotted(handleMacroRenderer);
+  
+  // Register slash command for live photos
+  logseq.Editor.registerSlashCommand("[Live Photos] insert micro", async () => {
+    const currentBlock = await logseq.Editor.getCurrentBlock();
+    if (currentBlock) {
+      const template = `{{renderer :live-photo, photo_url, video_url}}`;
+      await logseq.Editor.updateBlock(currentBlock.uuid, template);
+    }
+  });
 }
 
 logseq.ready(main).catch(console.error);
