@@ -4,6 +4,9 @@ import * as ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+// Import LivePhotosKit from local npm package
+import * as LivePhotosKit from "livephotoskit";
+
 import { logseq as PL } from "../package.json";
 
 // @ts-expect-error
@@ -11,37 +14,12 @@ const css = (t, ...args) => String.raw(t, ...args);
 
 const pluginId = PL.id;
 
-// Helper to load script in parent document
-const loadLivePhotosKit = async () => {
-  const doc = parent.document;
-  if ((parent.window as any).LivePhotosKit) return Promise.resolve();
-
-  return new Promise<void>((resolve, reject) => {
-    if (doc.getElementById("livephotoskit-script")) {
-      // already loading?
-      const existingScript = doc.getElementById("livephotoskit-script") as HTMLScriptElement;
-      if (existingScript.dataset.loaded === "true") {
-        resolve();
-      } else {
-        existingScript.addEventListener("load", () => resolve());
-        existingScript.addEventListener("error", reject);
-      }
-      return;
-    }
-
-    const script = doc.createElement("script");
-    script.id = "livephotoskit-script";
-    script.src = "https://cdn.apple-livephotoskit.com/lpk/1/livephotoskit.js";
-    script.async = true;
-    script.dataset.loaded = "false";
-
-    script.onload = () => {
-      script.dataset.loaded = "true";
-      resolve();
-    };
-    script.onerror = reject;
-    doc.head.appendChild(script);
-  });
+// Helper to ensure LivePhotosKit is available on parent window
+const ensureLivePhotosKit = () => {
+  // Make LivePhotosKit available on parent window if not already there
+  if (!(parent.window as any).LivePhotosKit) {
+    (parent.window as any).LivePhotosKit = LivePhotosKit;
+  }
 };
 
 function main() {
@@ -98,13 +76,8 @@ function main() {
     const [type, photoSrc, videoSrc] = payload.arguments;
     if (type !== ":live-photo" || !photoSrc || !videoSrc) return;
 
-    // Load the library in the parent context if needed
-    try {
-      await loadLivePhotosKit();
-    } catch (e) {
-      console.error("Failed to load LivePhotosKit", e);
-      return;
-    }
+    // Ensure LivePhotosKit is available on parent window
+    ensureLivePhotosKit();
 
     // We don't use provideUI here to avoid complexity. We render directly into the slot.
     // The slot is an element in the main Logseq DOM.
