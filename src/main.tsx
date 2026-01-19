@@ -1,12 +1,5 @@
 import "@logseq/libs";
-import React from "react";
-import * as ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
-
-// Import LivePhotosKit from local npm package
 import * as LivePhotosKit from "livephotoskit";
-
 import { logseq as PL } from "../package.json";
 
 // @ts-expect-error
@@ -25,52 +18,7 @@ const ensureLivePhotosKit = () => {
 function main() {
   console.info(`#${pluginId}: MAIN`);
 
-  // Setup UI but don't crash if root not found (though it should be)
-  const appContainer = document.getElementById("app");
-  if (appContainer) {
-    const root = ReactDOM.createRoot(appContainer);
-    root.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-  }
 
-  function createModel() {
-    return {
-      show() {
-        logseq.showMainUI();
-      },
-    };
-  }
-
-  logseq.provideModel(createModel());
-  logseq.setMainUIInlineStyle({
-    zIndex: 11,
-  });
-
-  const openIconName = "template-plugin-open";
-
-  logseq.provideStyle(css`
-    .${openIconName} {
-      opacity: 0.55;
-      font-size: 20px;
-      margin-top: 4px;
-    }
-
-    .${openIconName}:hover {
-      opacity: 0.9;
-    }
-  `);
-
-  logseq.App.registerUIItem("toolbar", {
-    key: openIconName,
-    template: `
-    <a data-on-click="show">
-        <div class="${openIconName}">⚙️</div>
-    </a>    
-`,
-  });
 
   logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
     const [type, photoSrc, videoSrc] = payload.arguments;
