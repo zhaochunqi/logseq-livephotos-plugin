@@ -2,12 +2,19 @@
   "name": "logseq-livephotos-plugin",
   "version": "0.0.5",
   "main": "dist/index.html",
+  "description": "Add live photos support to Logseq with enhanced media handling.",
+  "author": "zhaochunqi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhaochunqi/logseq-livephotos-plugin.git"
+  },
+  "keywords": ["logseq", "plugin", "live-photos", "media"],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preinstall": "npx only-allow pnpm"
   },
-  "license": "MIT",
   "dependencies": {
     "@logseq/libs": "^0.0.17",
     "react": "^18.2.0",
