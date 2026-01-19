@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.0.0...v1.0.1) (2026-01-19)
+
+
+### Bug Fixes
+
+* disable npm publishing in semantic-release ([fe8a211](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/fe8a211c2be2bd06ecb7174514cbea74a0b70da1))
+
 # 1.0.0 (2026-01-19)
 
 
