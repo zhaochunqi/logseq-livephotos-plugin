@@ -1,27 +1,44 @@
-export const playVideo = async (video: HTMLVideoElement) => {
-  try {
-    await video.play();
-    video.style.opacity = "1";
-  } catch (e) {
-    console.error("Video play failed", e);
-    video.style.opacity = "0";
-  }
-};
-
-export const stopVideo = (video: HTMLVideoElement) => {
-  video.style.opacity = "0";
-  setTimeout(() => {
-    if (getComputedStyle(video).opacity === "0") {
-      video.pause();
-      video.currentTime = 0;
-    }
-  }, 250);
-};
-
 export const attachVideoEvents = (container: HTMLElement, video: HTMLVideoElement) => {
-  container.addEventListener("mouseenter", () => playVideo(video));
-  container.addEventListener("mouseleave", () => stopVideo(video));
-  container.addEventListener("touchstart", () => playVideo(video));
-  container.addEventListener("touchend", () => stopVideo(video));
-  container.addEventListener("touchcancel", () => stopVideo(video));
+  let isHovering = false;
+  let playPromise: Promise<void> | undefined;
+
+  const handlePlay = async () => {
+    isHovering = true;
+    try {
+      playPromise = video.play();
+      await playPromise;
+      if (isHovering) {
+        video.style.opacity = "1";
+      } else {
+        // User left before play started/finished
+        video.pause();
+        video.currentTime = 0;
+        video.style.opacity = "0";
+      }
+    } catch (e) {
+      console.warn("Video play interrupted or failed", e);
+      if (!isHovering) {
+        video.style.opacity = "0";
+      }
+    }
+  };
+
+  const handleStop = () => {
+    isHovering = false;
+    video.style.opacity = "0";
+
+    // Slight delay to allow for smooth transition before pausing
+    setTimeout(() => {
+      if (!isHovering) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    }, 250);
+  };
+
+  container.addEventListener("mouseenter", handlePlay);
+  container.addEventListener("mouseleave", handleStop);
+  container.addEventListener("touchstart", handlePlay, { passive: true });
+  container.addEventListener("touchend", handleStop);
+  container.addEventListener("touchcancel", handleStop);
 };
