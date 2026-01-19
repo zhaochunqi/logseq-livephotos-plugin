@@ -2,6 +2,12 @@
 
 Add live photos support to Logseq with enhanced media handling and interactive features.
 
+## 🎬 Demo
+
+Here's a demo of the Live Photos Plugin in action:
+
+![Live Photos Demo](./livephotos.gif)
+
 ## ✨ Features
 
 - 📸 **Live Photos Support**: Seamlessly integrate live photos into your Logseq workflow
