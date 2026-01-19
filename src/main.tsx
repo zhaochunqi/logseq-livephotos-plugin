@@ -56,9 +56,46 @@ function main() {
     video.playsInline = true;
     video.loop = true;
 
-    // Append to container
+    // Create Badge element
+    const badge = parent.document.createElement("div");
+    badge.style.position = "absolute";
+    badge.style.top = "8px";
+    badge.style.left = "8px";
+    badge.style.display = "flex";
+    badge.style.alignItems = "center";
+    badge.style.gap = "4px";
+    badge.style.padding = "4px 6px";
+    badge.style.borderRadius = "4px";
+    badge.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+    badge.style.backdropFilter = "blur(4px)";
+    badge.style.zIndex = "10";
+    badge.style.pointerEvents = "none"; // Let clicks pass through
+
+    // Live Photo Icon (Concentric circles)
+    const iconSvg = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="black" stroke-width="2"/>
+        <circle cx="12" cy="12" r="5" fill="black"/>
+        <circle cx="12" cy="12" r="2" fill="white" style="opacity: 0.5"/> 
+      </svg>
+    `;
+    badge.innerHTML = iconSvg;
+
+    // "LIVE" text
+    const badgeText = parent.document.createElement("span");
+    badgeText.innerText = "LIVE";
+    badgeText.style.fontSize = "10px";
+    badgeText.style.fontWeight = "bold";
+    badgeText.style.color = "black";
+    badgeText.style.lineHeight = "1";
+    badgeText.style.letterSpacing = "0.5px";
+
+    badge.appendChild(badgeText);
+
+    // Append to container (Badge needs to be on top of video)
     container.appendChild(img);
     container.appendChild(video);
+    container.appendChild(badge);
     slotEl.appendChild(container);
 
     // Event Listeners for Live Photo effect
