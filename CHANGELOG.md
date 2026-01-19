@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.2...v1.3.3) (2026-01-19)
+
+
+### Bug Fixes
+
+* update build artifacts ([0a1d8d4](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/0a1d8d44bafcbd300b1acc481b2f3e689f72ac67))
+
 ## [1.3.2](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.1...v1.3.2) (2026-01-19)
 
 
