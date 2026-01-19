@@ -1,5 +1,4 @@
 import "@logseq/libs";
-import * as LivePhotosKit from "livephotoskit";
 import { logseq as PL } from "../package.json";
 
 // @ts-expect-error
@@ -7,62 +6,94 @@ const css = (t, ...args) => String.raw(t, ...args);
 
 const pluginId = PL.id;
 
-// Helper to ensure LivePhotosKit is available on parent window
-const ensureLivePhotosKit = () => {
-  // Make LivePhotosKit available on parent window if not already there
-  if (!(parent.window as any).LivePhotosKit) {
-    (parent.window as any).LivePhotosKit = LivePhotosKit;
-  }
-};
-
 function main() {
   console.info(`#${pluginId}: MAIN`);
-
-
 
   logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
     const [type, photoSrc, videoSrc] = payload.arguments;
     if (type !== ":live-photo" || !photoSrc || !videoSrc) return;
 
-    // Ensure LivePhotosKit is available on parent window
-    ensureLivePhotosKit();
-
-    // We don't use provideUI here to avoid complexity. We render directly into the slot.
     // The slot is an element in the main Logseq DOM.
     const slotEl = parent.document.getElementById(slot);
     if (!slotEl) return;
 
-    // Clear slot
+    // Clear slot and set basic styles
     slotEl.innerHTML = "";
     slotEl.style.width = "100%";
     slotEl.style.height = "auto";
-    slotEl.style.minHeight = "300px"; // Provide some default height
     slotEl.style.display = "block";
 
-    // Create a container for the player
+    // Create a container
     const container = parent.document.createElement("div");
-    container.style.width = "100%";
-    container.style.height = "500px";
     container.style.position = "relative";
+    container.style.width = "100%";
+    container.style.cursor = "pointer";
+    container.style.overflow = "hidden";
+    container.style.borderRadius = "8px";
+
+    // Create Image element (Poster)
+    // Position relative so it dictates the container height
+    const img = parent.document.createElement("img");
+    img.src = photoSrc;
+    img.style.width = "100%";
+    img.style.height = "auto";
+    img.style.display = "block"; // Always visible as the base layer
+    img.style.objectFit = "cover";
+
+    // Create Video element
+    const video = parent.document.createElement("video");
+    video.src = videoSrc;
+    video.style.position = "absolute";
+    video.style.top = "0";
+    video.style.left = "0";
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.style.objectFit = "cover";
+    video.style.opacity = "0"; // Start hidden
+    video.style.transition = "opacity 0.2s ease-in-out"; // Smooth fade
+    video.style.pointerEvents = "none"; // Ensure mouse events go to container
+    video.muted = true;
+    video.playsInline = true;
+    video.loop = true;
+
+    // Append to container
+    container.appendChild(img);
+    container.appendChild(video);
     slotEl.appendChild(container);
 
-    // Initialize player using the PARENT window's LivePhotosKit instance
-    const LPK = (parent.window as any).LivePhotosKit;
-
-    if (LPK && LPK.Player) {
+    // Event Listeners for Live Photo effect
+    const playVideo = async () => {
       try {
-        const player = LPK.Player(container);
-        player.photoSrc = photoSrc;
-        player.videoSrc = videoSrc;
-        player.showsNativeControls = true;
-      } catch (err) {
-        console.error("LivePhotosKit Player init error:", err);
-        slotEl.innerHTML = `<div style="color:red">Error initializing Live Photo: ${err}</div>`;
+        await video.play();
+        video.style.opacity = "1";
+      } catch (e) {
+        console.error("Video play failed", e);
+        // If play fails, keep transparency
+        video.style.opacity = "0";
       }
-    } else {
-      console.error("LivePhotosKit not found on parent window");
-      slotEl.innerHTML = `<div style="color:red">LivePhotosKit library not loaded.</div>`;
-    }
+    };
+
+    const stopVideo = () => {
+      video.style.opacity = "0";
+      // Delay pause slightly to allow fade out
+      setTimeout(() => {
+        if (getComputedStyle(video).opacity === "0") {
+          video.pause();
+          video.currentTime = 0;
+        }
+      }, 250);
+    };
+
+    // User interaction
+    container.addEventListener("mouseenter", playVideo);
+    container.addEventListener("mouseleave", stopVideo);
+
+    // Also support touch for mobile/tablets
+    container.addEventListener("touchstart", (e) => {
+      playVideo();
+    });
+    container.addEventListener("touchend", stopVideo);
+    container.addEventListener("touchcancel", stopVideo);
   });
 }
 
