@@ -23,12 +23,12 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: "16"
-      - uses: pnpm/action-setup@v2.4.1
+          node-version: "18"
+      - uses: pnpm/action-setup@v4
         with:
-          version: 6.35.1
+          version: 8
       - run: pnpm install
       - run: pnpm build
       - name: Install zip
