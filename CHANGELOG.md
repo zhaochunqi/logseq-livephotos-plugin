@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.0.1...v1.1.0) (2026-01-19)
+
+
+### Features
+
+* Add automatic live photo conversion ([a0455f1](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/a0455f133012fce8df48289e57ec24a9bc60ced5))
+
 ## [1.0.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.0.0...v1.0.1) (2026-01-19)
 
 
