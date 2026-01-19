@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.3...v1.4.0) (2026-01-19)
+
+
+### Features
+
+* add animated Live Photos badge with enhanced visual effects ([7104fbb](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/7104fbbd56a3d805142d98be756ab20fa4316de4))
+
 ## [1.3.3](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.2...v1.3.3) (2026-01-19)
 
 
