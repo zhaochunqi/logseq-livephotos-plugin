@@ -39,6 +39,16 @@ const styles = {
     backdropFilter: "blur(6px)",
     zIndex: "2",
     pointerEvents: "none" as const,
+    transition: "transform 0.2s ease",
+  },
+  badgePlaying: {
+    animation: "badgePulse 0.3s ease-out" as string,
+  },
+  badgeIcon: {
+    transition: "transform 0.3s ease",
+  },
+  badgeIconPlaying: {
+    animation: "rotate 2s linear infinite",
   },
   badgeText: {
     fontSize: "10px",
@@ -66,18 +76,19 @@ const styles = {
   },
 } as const;
 
-const createBadgeIcon = (): string => {
+const createBadgeIcon = (isPlaying: boolean = false): string => {
   return `
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" stroke="black" stroke-width="2"/>
+      <circle cx="12" cy="12" r="10" stroke="black" stroke-width="2.5" fill="none"/>
       <circle cx="12" cy="12" r="5" fill="black"/>
-      <circle cx="12" cy="12" r="2" fill="white" style="opacity: 0.5"/>
+      <circle cx="12" cy="12" r="2" fill="white" style="opacity: 0.8"/>
     </svg>
   `;
 };
 
 const createBadge = (): HTMLElement => {
   const badge = createElement("div", styles.badge);
+  badge.setAttribute('data-live-badge', 'true');
   badge.innerHTML = createBadgeIcon();
 
   const badgeText = createElement("span", styles.badgeText);
@@ -85,6 +96,53 @@ const createBadge = (): HTMLElement => {
   badge.appendChild(badgeText);
 
   return badge;
+};
+
+export const updateBadgeForPlaying = (badge: HTMLElement, isPlaying: boolean): void => {
+  // Update badge icon
+  const icon = badge.querySelector('svg') as SVGElement;
+  if (icon) {
+    const outerCircle = icon.querySelector('circle:first-child') as SVGCircleElement;
+    const innerCircle = icon.querySelector('circle:last-child') as SVGCircleElement;
+    
+    if (outerCircle) {
+      if (isPlaying) {
+        // Make the dashed circle more visible with longer dashes
+        outerCircle.setAttribute('stroke-dasharray', '8 4');
+        outerCircle.setAttribute('stroke-width', '2.5');
+        outerCircle.style.stroke = '#333333'; // Dark gray for better visibility but less aggressive
+        outerCircle.style.transformOrigin = 'center';
+        outerCircle.style.animation = 'rotate 3s linear infinite';
+      } else {
+        outerCircle.setAttribute('stroke-dasharray', 'none');
+        outerCircle.setAttribute('stroke-width', '2');
+        outerCircle.style.stroke = '';
+        outerCircle.style.animation = '';
+      }
+    }
+    
+    if (innerCircle) {
+      if (isPlaying) {
+        // Make the inner circle more visible
+        innerCircle.style.fill = '#333333'; // Dark gray to match outer circle
+        innerCircle.innerHTML = '<animate attributeName="r" values="2;3;2" dur="1s" repeatCount="indefinite"/>';
+        innerCircle.innerHTML += '<animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite"/>';
+      } else {
+        innerCircle.style.fill = 'white';
+        innerCircle.style.opacity = '0.5';
+        innerCircle.innerHTML = '';
+      }
+    }
+  }
+
+  // Animate badge container
+  if (isPlaying) {
+    badge.style.transform = 'scale(1.1)';
+    badge.style.animation = 'badgePulse 0.3s ease-out';
+  } else {
+    badge.style.transform = 'scale(1)';
+    badge.style.animation = '';
+  }
 };
 
 const getMuteIcon = (isMuted: boolean): string => {
@@ -143,7 +201,8 @@ export const createLivePhotoContainer = (
   container.appendChild(badge);
   container.appendChild(muteButton);
 
-  attachVideoEvents(container, video);
+  // Pass the updateBadgeForPlaying function to video events
+  attachVideoEvents(container, video, updateBadgeForPlaying);
 
   return container;
 };

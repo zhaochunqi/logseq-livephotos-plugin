@@ -10,6 +10,34 @@ import { LivePhotoConverter } from "./utils/converter";
 
 const pluginId = PL.id;
 
+// Add global styles for Live Photo animations
+const globalStyles = `
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  @keyframes badgePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1.1); }
+  }
+  
+  /* Add subtle drop shadow for better visibility */
+  [data-live-badge] {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+  
+  [data-live-badge] svg {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+  }
+`;
+
+// Inject global styles
+const styleElement = document.createElement('style');
+styleElement.textContent = globalStyles;
+document.head.appendChild(styleElement);
+
 const styles = {
   slot: {
     width: "100%",
@@ -180,29 +208,14 @@ async function main() {
     template: `
       <span class="live-photos-convert">
         <a title="Convert Live Photos" class="button" data-on-click="handleConvertPage">
-          <i class="ti ti-photo"></i>
-        </a>
-      </span>
-    `,
-  });
-
-  logseq.App.registerUIItem("toolbar", {
-    key: "live-photos-quick-convert", 
-    template: `
-      <span class="live-photos-quick-convert">
-        <a title="Quick Convert" class="button" data-on-click="handleQuickConvert">
-          <i class="ti ti-bolt"></i>
-        </a>
-      </span>
-    `,
-  });
-
-  logseq.App.registerUIItem("toolbar", {
-    key: "live-photos-settings",
-    template: `
-      <span class="live-photos-settings">
-        <a title="Live Photos Settings" class="button" data-on-click="handleSettings">
-          <i class="ti ti-settings"></i>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+            <text x="12" y="11" font-size="3" font-weight="bold" text-anchor="middle" fill="currentColor">LIVE</text>
+            <circle cx="20" cy="8" r="1.5" fill="currentColor">
+              <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
         </a>
       </span>
     `,
