@@ -1,39 +1,41 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Releases
+name: Release
+on:
+  push:
+    branches:
+      -  main
+  workflow_dispatch:
 
 env:
   PLUGIN_NAME: logseq-livephotos-plugin
 
-# Controls when the action will run.
-on:
-  # push:
-  #   branches:
-  #     - "master"
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+permissions:
+  contents: read
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   release:
-    # The type of runner that the job will run on
+    name: Release
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for trusted publishing and npm provenance
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v6
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: "20"
-      - uses: pnpm/action-setup@v4
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          version: 10
-      - run: pnpm install
-      - run: pnpm build
+          node-version: "lts/*"
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm build
       - name: Install zip
         uses: montudor/action-zip@v1
       - name: Release
-        run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
