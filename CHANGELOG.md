@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.1.0...v1.2.0) (2026-01-19)
+
+
+### Features
+
+* Add sound settings with real-time updates ([667ae15](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/667ae15f0a5b7e7837c01c0a25bee6f682edec2c))
+
 # [1.1.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.0.1...v1.1.0) (2026-01-19)
 
 
