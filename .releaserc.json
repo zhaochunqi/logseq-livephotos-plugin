@@ -10,7 +10,7 @@
     "@semantic-release/git",
     ["@semantic-release/github", {
       "assets": [
-        {"path": "logseq-livephotos-plugin.zip", "label": "Plugin ZIP File"}
+        {"path": "logseq-livephotos-plugin.zip"}
       ]
     }]
   ]
