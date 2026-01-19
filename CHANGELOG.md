@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.1...v1.3.2) (2026-01-19)
+
+
+### Bug Fixes
+
+* **deps:** update react monorepo ([#18](https://github.com/zhaochunqi/logseq-livephotos-plugin/issues/18)) ([48278c2](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/48278c20a7b185e9151bb1ed2409043271364a64))
+
 ## [1.3.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.0...v1.3.1) (2026-01-19)
 
 
