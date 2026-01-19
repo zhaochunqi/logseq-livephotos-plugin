@@ -37,7 +37,7 @@ const styles = {
     borderRadius: "4px",
     backgroundColor: "rgba(255, 255, 255, 0.05)",
     backdropFilter: "blur(6px)",
-    zIndex: "10",
+    zIndex: "2",
     pointerEvents: "none" as const,
   },
   badgeText: {
@@ -61,7 +61,7 @@ const styles = {
     backgroundColor: "rgba(255, 255, 255, 0.05)",
     backdropFilter: "blur(6px)",
     cursor: "pointer" as const,
-    zIndex: "10",
+    zIndex: "2",
     transition: "transform 0.1s ease",
   },
 } as const;
@@ -105,13 +105,17 @@ const getMuteIcon = (isMuted: boolean): string => {
   `;
 };
 
-const createMuteButton = (): HTMLElement => {
+const createMuteButton = (initialMuted: boolean): HTMLElement => {
   const button = createElement("div", styles.muteButton);
-  button.innerHTML = getMuteIcon(true);
+  button.innerHTML = getMuteIcon(initialMuted);
   return button;
 };
 
-export const createLivePhotoContainer = (photoSrc: string, videoSrc: string): HTMLElement => {
+export const createLivePhotoContainer = (
+  photoSrc: string, 
+  videoSrc: string, 
+  enableSound: boolean = false
+): HTMLElement => {
   const container = createElement("div", styles.container);
 
   const img = createElement("img", styles.image);
@@ -119,12 +123,13 @@ export const createLivePhotoContainer = (photoSrc: string, videoSrc: string): HT
 
   const video = createElement("video", styles.video);
   video.src = videoSrc;
-  video.muted = true;
+  video.muted = !enableSound;
   video.playsInline = true;
   video.loop = true;
 
   const badge = createBadge();
-  const muteButton = createMuteButton();
+  const isInitiallyMuted = !enableSound;
+  const muteButton = createMuteButton(isInitiallyMuted);
 
   muteButton.addEventListener("click", (e) => {
     e.stopPropagation();

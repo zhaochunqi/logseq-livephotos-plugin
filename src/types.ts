@@ -22,4 +22,5 @@ export type MediaPair = {
 export type PluginSettings = {
   regexPattern: string;
   enableAutoConvert: boolean;
+  enableSound: boolean;
 };

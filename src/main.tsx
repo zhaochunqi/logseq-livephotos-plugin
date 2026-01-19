@@ -25,6 +25,7 @@ const isLivePhotoMacro = (type?: string, photoSrc?: string, videoSrc?: string): 
 // Global instances
 let settingsManager: SettingsManager;
 let converter: LivePhotoConverter;
+const livePhotoInstances = new Map<string, { photoSrc: string; videoSrc: string; container: HTMLElement }>();
 
 const handleMacroRenderer = ({ slot, payload }: MacroPayload) => {
   const [type, photoSrc, videoSrc] = payload.arguments;
@@ -37,8 +38,12 @@ const handleMacroRenderer = ({ slot, payload }: MacroPayload) => {
   slotEl.innerHTML = "";
   applyStyles(slotEl, styles.slot);
 
-  const container = createLivePhotoContainer(photoSrc, videoSrc);
+  const settings = settingsManager.getSettings();
+  const container = createLivePhotoContainer(photoSrc, videoSrc, settings.enableSound);
   slotEl.appendChild(container);
+  
+  // Store instance for later updates
+  livePhotoInstances.set(slot, { photoSrc, videoSrc, container });
 };
 
 async function main() {
@@ -59,6 +64,13 @@ async function main() {
       default: DEFAULT_SETTINGS.enableAutoConvert,
       title: 'Auto Convert',
       description: 'Enable automatic conversion when pasting media files'
+    },
+    {
+      key: 'enableSound',
+      type: 'boolean',
+      default: DEFAULT_SETTINGS.enableSound,
+      title: 'Enable Sound',
+      description: 'Enable sound by default for live photos. When unchecked, videos are muted by default.'
     }
   ]);
 
@@ -67,7 +79,30 @@ async function main() {
   await settingsManager.load();
   converter = new LivePhotoConverter(settingsManager);
 
+  // Add settings change listener to update existing Live Photos
+  settingsManager.addSettingsListener((newSettings) => {
+    // Update all existing Live Photo instances
+    livePhotoInstances.forEach(({ photoSrc, videoSrc, container }, slot) => {
+      const slotEl = PARENT_DOC.getElementById(slot);
+      if (slotEl && slotEl.contains(container)) {
+        // Create new container with updated settings
+        const newContainer = createLivePhotoContainer(photoSrc, videoSrc, newSettings.enableSound);
+        slotEl.innerHTML = "";
+        applyStyles(slotEl, styles.slot);
+        slotEl.appendChild(newContainer);
+        
+        // Update stored instance
+        livePhotoInstances.set(slot, { photoSrc, videoSrc, container: newContainer });
+      }
+    });
+  });
+
   logseq.App.onMacroRendererSlotted(handleMacroRenderer);
+
+  // Listen for settings changes from Logseq UI
+  logseq.onSettingsChanged((newSettings) => {
+    settingsManager.updateSettings(newSettings);
+  });
   
   // Register model for UI interactions
   logseq.provideModel({

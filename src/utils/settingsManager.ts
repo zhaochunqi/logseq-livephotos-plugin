@@ -3,6 +3,7 @@ import type { PluginSettings } from "../types";
 
 export class SettingsManager {
   private settings: PluginSettings;
+  private listeners: ((settings: PluginSettings) => void)[] = [];
 
   constructor() {
     this.settings = { ...DEFAULT_SETTINGS };
@@ -19,7 +20,8 @@ export class SettingsManager {
         this.settings = { 
           ...DEFAULT_SETTINGS, 
           regexPattern: loadedSettings.regexPattern || DEFAULT_SETTINGS.regexPattern,
-          enableAutoConvert: loadedSettings.enableAutoConvert !== undefined ? loadedSettings.enableAutoConvert : DEFAULT_SETTINGS.enableAutoConvert
+          enableAutoConvert: loadedSettings.enableAutoConvert !== undefined ? loadedSettings.enableAutoConvert : DEFAULT_SETTINGS.enableAutoConvert,
+          enableSound: loadedSettings.enableSound !== undefined ? loadedSettings.enableSound : DEFAULT_SETTINGS.enableSound
         };
         console.log('[LivePhotos] Loaded settings:', this.settings);
       } else {
@@ -36,6 +38,8 @@ export class SettingsManager {
     try {
       // Use Logseq settings API
       logseq.updateSettings(settings);
+      // Notify listeners of settings change
+      this.listeners.forEach(listener => listener(this.settings));
     } catch (error) {
       console.error('Failed to save settings:', error);
       throw error;
@@ -48,6 +52,8 @@ export class SettingsManager {
 
   updateSettings(settings: Partial<PluginSettings>): void {
     this.settings = { ...this.settings, ...settings };
+    // Notify listeners of settings change
+    this.listeners.forEach(listener => listener(this.settings));
   }
 
   async showSettingsUI(): Promise<void> {
@@ -77,6 +83,17 @@ export class SettingsManager {
       } catch (error) {
         logseq.UI.showMsg('Invalid regex pattern!', 'error');
       }
+    }
+  }
+
+  addSettingsListener(listener: (settings: PluginSettings) => void): void {
+    this.listeners.push(listener);
+  }
+
+  removeSettingsListener(listener: (settings: PluginSettings) => void): void {
+    const index = this.listeners.indexOf(listener);
+    if (index > -1) {
+      this.listeners.splice(index, 1);
     }
   }
 }
