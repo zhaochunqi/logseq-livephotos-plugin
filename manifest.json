@@ -3,7 +3,7 @@
   "description": "Add live photos support to Logseq with enhanced media handling and interactive features.",
   "author": "zhaochunqi",
   "repo": "zhaochunqi/logseq-livephotos-plugin",
-  "icon": "./logo-icon.svg",
+  "icon": "./logo.svg",
   "effect": true,
   "sponsors": []
 }
