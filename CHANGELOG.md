@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.4.0...v1.5.0) (2026-01-20)
+
+
+### Features
+
+* add support for local Logseq assets folder ([e7a7f9b](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/e7a7f9b3346de3fc44b61898ec673f7c2a3860a9))
+
 # [1.4.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.3.3...v1.4.0) (2026-01-19)
 
 
