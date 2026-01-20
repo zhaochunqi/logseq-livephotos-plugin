@@ -169,18 +169,37 @@ const createMuteButton = (initialMuted: boolean): HTMLElement => {
   return button;
 };
 
-export const createLivePhotoContainer = (
+export const createLivePhotoContainer = async (
   photoSrc: string, 
   videoSrc: string, 
   enableSound: boolean = false
-): HTMLElement => {
+): Promise<HTMLElement> => {
   const container = createElement("div", styles.container);
 
+  // Normalize URLs for assets protocol using dynamic graph path
+  const normalizeUrl = async (url: string): Promise<string> => {
+    if (url.startsWith('../assets/') || url.startsWith('./assets/')) {
+      try {
+        const currentGraph = await logseq.App.getCurrentGraph();
+        if (currentGraph && currentGraph.path) {
+          const filename = url.replace(/^(\.\.\/|\.\/)assets\//, '');
+          return `assets:///${currentGraph.path}/assets/${filename}`;
+        }
+      } catch (error) {
+        console.warn('[LivePhotos] Failed to get current graph path:', error);
+      }
+    }
+    return url;
+  };
+
+  const normalizedPhotoSrc = await normalizeUrl(photoSrc);
+  const normalizedVideoSrc = await normalizeUrl(videoSrc);
+
   const img = createElement("img", styles.image);
-  img.src = photoSrc;
+  img.src = normalizedPhotoSrc;
 
   const video = createElement("video", styles.video);
-  video.src = videoSrc;
+  video.src = normalizedVideoSrc;
   video.muted = !enableSound;
   video.playsInline = true;
   video.loop = true;

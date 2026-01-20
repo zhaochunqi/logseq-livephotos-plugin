@@ -55,7 +55,7 @@ let settingsManager: SettingsManager;
 let converter: LivePhotoConverter;
 const livePhotoInstances = new Map<string, { photoSrc: string; videoSrc: string; container: HTMLElement }>();
 
-const handleMacroRenderer = ({ slot, payload }: MacroPayload) => {
+const handleMacroRenderer = async ({ slot, payload }: MacroPayload) => {
   const [type, photoSrc, videoSrc] = payload.arguments;
 
   if (!isLivePhotoMacro(type, photoSrc, videoSrc)) return;
@@ -67,7 +67,7 @@ const handleMacroRenderer = ({ slot, payload }: MacroPayload) => {
   applyStyles(slotEl, styles.slot);
 
   const settings = settingsManager.getSettings();
-  const container = createLivePhotoContainer(photoSrc, videoSrc, settings.enableSound);
+  const container = await createLivePhotoContainer(photoSrc, videoSrc, settings.enableSound);
   slotEl.appendChild(container);
   
   // Store instance for later updates
@@ -108,13 +108,13 @@ async function main() {
   converter = new LivePhotoConverter(settingsManager);
 
   // Add settings change listener to update existing Live Photos
-  settingsManager.addSettingsListener((newSettings) => {
+  settingsManager.addSettingsListener(async (newSettings) => {
     // Update all existing Live Photo instances
-    livePhotoInstances.forEach(({ photoSrc, videoSrc, container }, slot) => {
+    livePhotoInstances.forEach(async ({ photoSrc, videoSrc, container }, slot) => {
       const slotEl = PARENT_DOC.getElementById(slot);
       if (slotEl && slotEl.contains(container)) {
         // Create new container with updated settings
-        const newContainer = createLivePhotoContainer(photoSrc, videoSrc, newSettings.enableSound);
+        const newContainer = await createLivePhotoContainer(photoSrc, videoSrc, newSettings.enableSound);
         slotEl.innerHTML = "";
         applyStyles(slotEl, styles.slot);
         slotEl.appendChild(newContainer);
@@ -130,6 +130,7 @@ async function main() {
   // Listen for settings changes from Logseq UI
   logseq.onSettingsChanged((newSettings) => {
     settingsManager.updateSettings(newSettings);
+    converter.updateSettings();
   });
   
   // Register model for UI interactions
