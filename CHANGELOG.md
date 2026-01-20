@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.5.1...v1.6.0) (2026-01-20)
+
+
+### Features
+
+* remove slash commands and update documentation ([b34c008](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/b34c008d00489d583d46783cb93db6a49e3b79b5))
+
 ## [1.5.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.5.0...v1.5.1) (2026-01-20)
 
 
