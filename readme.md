@@ -73,8 +73,6 @@ This matches files like:
 
 #### Slash Commands
 - `/[Live Photos] insert macro` - Insert live photo macro template
-- `/[Live Photos] convert page` - Convert current page with preview
-- `/[Live Photos] settings` - Open plugin settings
 
 #### Command Palette
 - `Live Photos: Settings` - Open plugin settings

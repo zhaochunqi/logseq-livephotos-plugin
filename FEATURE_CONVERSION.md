@@ -5,7 +5,6 @@
 ### 1. 自动配对转换
 - **功能**: 自动分析当前页面中的图片和视频，并根据正则表达式匹配成对转换
 - **使用**: 
-  - Slash命令: `/[Live Photos] convert page`
   - 命令面板: `Live Photos: Convert Current Page`
   - 快速转换: `Live Photos: Quick Convert Current Page` (无预览)
 
@@ -13,7 +12,6 @@
 - **正则表达式配置**: 可自定义文件匹配规则
 - **默认正则**: `^(.*?)-(\\w{5})\\.(jpg|jpeg|png|gif|mov|mp4)$`
 - **设置访问**: 
-  - Slash命令: `/[Live Photos] settings`
   - 命令面板: `Live Photos: Settings`
   - 插件设置界面
 

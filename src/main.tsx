@@ -163,13 +163,7 @@ async function main() {
     }
   });
 
-  logseq.Editor.registerSlashCommand("[Live Photos] convert page", async () => {
-    await converter.showPreviewDialog();
-  });
 
-  logseq.Editor.registerSlashCommand("[Live Photos] settings", async () => {
-    logseq.showSettingsUI();
-  });
 
   // Settings command
   logseq.App.registerCommandPalette({
