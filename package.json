@@ -1,6 +1,6 @@
 {
   "name": "logseq-livephotos-plugin",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "dist/index.html",
   "description": "Add live photos support to Logseq with enhanced media handling.",
   "author": "zhaochunqi",

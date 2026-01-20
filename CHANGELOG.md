@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.5.0...v1.5.1) (2026-01-20)
+
+
+### Bug Fixes
+
+* include logo.svg in zip package ([118199c](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/118199cbd739de8ae0d41675891d21d7162d874a))
+
 # [1.5.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.4.0...v1.5.0) (2026-01-20)
 
 
