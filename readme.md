@@ -48,7 +48,11 @@ Create live photos using the macro syntax:
 
 Example:
 ```
-{{renderer :live-photo, ./images/photo-abc123.jpg, ./videos/photo-abc123.mov}}
+# this is real working demo
+{{renderer :live-photo, https://cdn.jsdelivr.net/gh/zhaochunqi/logseq-livephotos-plugin@main/resources/20260118-QnJYmcw1I-1.jpg, https://cdn.jsdelivr.net/gh/zhaochunqi/logseq-livephotos-plugin@main/resources/20260118-QnJYmcw1I-1.mov}}
+
+# this is local file. not working if you don't have that file.
+{{renderer :live-photo, ../assets/20260117-Qnz7PzX1y-1_1768898848392_0.jpg, ../assets/20260117-Qnz7PzX1y-1_1768898856732_0.mov}}
 ```
 
 ### Auto-Conversion
