@@ -4,13 +4,13 @@
     {
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
-      "ignoreTests": true
+      "requiredStatusChecks": ["test"]
     },
     {
       "matchPackageNames": ["@logseq/libs"],
       "ignoreUnstable": false,
       "automerge": false,
-      "ignoreTests": true
+      "requiredStatusChecks": ["test"]
     }
   ]
 }

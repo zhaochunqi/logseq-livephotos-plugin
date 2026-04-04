@@ -18,6 +18,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
@@ -46,7 +49,8 @@
     "tailwindcss": "4.2.2",
     "typescript": "5.9.3",
     "vite": "7.3.1",
-    "vite-plugin-logseq": "1.1.2"
+    "vite-plugin-logseq": "1.1.2",
+    "vitest": "^4.1.2"
   },
   "logseq": {
     "id": "logseq-livephotos-plugin",

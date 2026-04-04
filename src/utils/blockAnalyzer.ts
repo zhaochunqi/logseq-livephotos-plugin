@@ -9,18 +9,14 @@ export class BlockAnalyzer {
 
   async getCurrentPageBlocks(): Promise<BlockTree[]> {
     const currentPage = await logseq.Editor.getCurrentPage();
-    console.log('[LivePhotos] Current page:', currentPage);
     
     if (!currentPage || !currentPage.name) {
-      console.log('[LivePhotos] No current page or page name');
       return [];
     }
 
     const blocksTree = await logseq.Editor.getPageBlocksTree(currentPage.name as any);
-    console.log('[LivePhotos] Raw blocks tree:', blocksTree);
     
     const flattened = this.flattenBlockTree(blocksTree || []);
-    console.log('[LivePhotos] Flattened blocks:', flattened);
     return flattened;
   }
 
@@ -52,48 +48,33 @@ export class BlockAnalyzer {
     const markdownImageRegex = /!\[.*?\]\((.*?)\)/g;
     const match = markdownImageRegex.exec(content);
     
-    console.log('[LivePhotos] Extracting media from content:', content);
-    console.log('[LivePhotos] Regex match:', match);
-    
     if (!match) return { url: '', type: null };
     
     const url = match[1];
-    console.log('[LivePhotos] Extracted URL:', url);
     
     if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-      console.log('[LivePhotos] Detected image type');
       return { url, type: 'image' };
     } else if (url.match(/\.(mov|mp4|avi|webm)$/i)) {
-      console.log('[LivePhotos] Detected video type');
       return { url, type: 'video' };
     }
     
-    console.log('[LivePhotos] No media type matched');
     return { url: '', type: null };
   }
 
   findMediaPairs(blocks: BlockTree[]): MediaPair[] {
-    console.log('[LivePhotos] Finding media pairs from blocks:', blocks.length);
     const pairs: MediaPair[] = [];
     
-    // Group blocks by level and parent
     const groupedBlocks = this.groupBlocksByLevel(blocks);
-    console.log('[LivePhotos] Grouped blocks by level:', groupedBlocks);
     
     for (const [levelKey, levelBlocks] of Object.entries(groupedBlocks)) {
-      console.log('[LivePhotos] Processing level:', levelKey, 'with', levelBlocks.length, 'blocks');
       const consecutiveMediaBlocks = this.findConsecutiveMediaBlocks(levelBlocks);
-      console.log('[LivePhotos] Found consecutive media groups:', consecutiveMediaBlocks.length);
       
       for (const group of consecutiveMediaBlocks) {
-        console.log('[LivePhotos] Processing group:', group);
         const groupPairs = this.findValidPairs(group);
-        console.log('[LivePhotos] Found pairs in group:', groupPairs.length);
         pairs.push(...groupPairs);
       }
     }
     
-    console.log('[LivePhotos] Total pairs found:', pairs.length);
     return pairs;
   }
 
@@ -135,10 +116,8 @@ export class BlockAnalyzer {
   }
 
   private findValidPairs(blocks: BlockTree[]): MediaPair[] {
-    console.log('[LivePhotos] Finding all valid pairs from', blocks.length, 'blocks');
     const pairs: MediaPair[] = [];
     
-    // Look for image-video or video-image pairs
     for (let i = 0; i < blocks.length - 1; i++) {
       const block1 = blocks[i];
       const block2 = blocks[i + 1];
@@ -146,20 +125,14 @@ export class BlockAnalyzer {
       const media1 = this.extractMediaUrl(block1.content);
       const media2 = this.extractMediaUrl(block2.content);
       
-      console.log(`[LivePhotos] Checking pair ${i}:`, media1.type, media2.type);
-      
       if (media1.type && media2.type && media1.type !== media2.type) {
         const imageBlock = media1.type === 'image' ? block1 : block2;
         const videoBlock = media1.type === 'video' ? block1 : block2;
         const imageUrl = media1.type === 'image' ? media1.url : media2.url;
         const videoUrl = media1.type === 'video' ? media1.url : media2.url;
         
-        console.log('[LivePhotos] Potential pair found, checking match...');
-        
-        // Simple filename-based matching as fallback
         if (this.isSimpleMatch(imageUrl, videoUrl)) {
-          console.log('[LivePhotos] Simple match found!');
-          const matchScore = 1.0; // Perfect score for simple match
+          const matchScore = 1.0;
           pairs.push({
             imageBlock,
             videoBlock,
@@ -183,7 +156,6 @@ export class BlockAnalyzer {
       }
     }
     
-    console.log('[LivePhotos] Found', pairs.length, 'valid pairs');
     return pairs;
   }
 
@@ -191,30 +163,18 @@ export class BlockAnalyzer {
     const imageFileName = this.extractFileName(imageUrl);
     const videoFileName = this.extractFileName(videoUrl);
     
-    console.log('[LivePhotos] Testing simple match:', imageFileName, videoFileName);
-    
-    // Remove extensions
     const imageBase = imageFileName.replace(/\.[^.]*$/, '');
     const videoBase = videoFileName.replace(/\.[^.]*$/, '');
     
-    console.log('[LivePhotos] Base names:', imageBase, videoBase);
-    
-    // Check if they have same prefix before the last 6 characters
     if (imageBase.length >= 6 && videoBase.length >= 6) {
       const imagePrefix = imageBase.slice(0, -6);
       const videoPrefix = videoBase.slice(0, -6);
       
-      console.log('[LivePhotos] Prefixes:', imagePrefix, videoPrefix);
-      
       if (imagePrefix === videoPrefix) {
-        // Check that the last 6 characters are different
         const imageSuffix = imageBase.slice(-6);
         const videoSuffix = videoBase.slice(-6);
         
-        console.log('[LivePhotos] Suffixes:', imageSuffix, videoSuffix);
-        
         if (imageSuffix !== videoSuffix) {
-          console.log('[LivePhotos] Simple pattern match confirmed!');
           return true;
         }
       }
@@ -225,36 +185,20 @@ export class BlockAnalyzer {
 
   private calculateMatchScore(imageUrl: string, videoUrl: string): number {
     try {
-      console.log('[LivePhotos] Calculating match score for:', imageUrl, videoUrl);
-      console.log('[LivePhotos] Using regex pattern:', this.settings.regexPattern);
-      
-      // Extract filename from URL
       const imageFileName = this.extractFileName(imageUrl);
       const videoFileName = this.extractFileName(videoUrl);
-      
-      console.log('[LivePhotos] Extracted filenames:', imageFileName, videoFileName);
       
       const regex = new RegExp(this.settings.regexPattern);
       
       const imageMatch = imageFileName.match(regex);
       const videoMatch = videoFileName.match(regex);
       
-      console.log('[LivePhotos] Image regex match:', imageMatch);
-      console.log('[LivePhotos] Video regex match:', videoMatch);
-      
       if (!imageMatch || !videoMatch) {
-        console.log('[LivePhotos] No regex match, trying simple pattern matching');
-        
-        // Fallback to simple pattern matching
         const simplePattern = /^(.*?)-([A-Za-z0-9]{5,6})\.(jpg|jpeg|png|gif|mov|mp4)$/;
         const imageSimpleMatch = imageFileName.match(simplePattern);
         const videoSimpleMatch = videoFileName.match(simplePattern);
         
-        console.log('[LivePhotos] Image simple match:', imageSimpleMatch);
-        console.log('[LivePhotos] Video simple match:', videoSimpleMatch);
-        
         if (!imageSimpleMatch || !videoSimpleMatch) {
-          console.log('[LivePhotos] No pattern match at all, score 0');
           return 0;
         }
         
@@ -263,53 +207,35 @@ export class BlockAnalyzer {
         const imageRandom = imageSimpleMatch[2];
         const videoRandom = videoSimpleMatch[2];
         
-        console.log('[LivePhotos] Simple match - Image base:', imageBase, 'random:', imageRandom);
-        console.log('[LivePhotos] Simple match - Video base:', videoBase, 'random:', videoRandom);
-        
         let score = 0;
         if (imageBase === videoBase) {
-          score = 1.0; // Perfect match
-          console.log('[LivePhotos] Perfect base name match, score 1.0');
+          score = 1.0;
         } else {
           const similarity = this.calculateStringSimilarity(imageBase, videoBase);
           score = similarity * 0.8;
-          console.log('[LivePhotos] Base name similarity:', similarity, '*', 0.8, '=', score);
         }
         
-        console.log('[LivePhotos] Final score (simple):', score);
         return score;
       }
       
-      // Extract base name and random string from original regex
       const imageBase = imageMatch[1];
       const imageRandom = imageMatch[2];
       const videoBase = videoMatch[1];
       const videoRandom = videoMatch[2];
       
-      console.log('[LivePhotos] Image base:', imageBase, 'random:', imageRandom);
-      console.log('[LivePhotos] Video base:', videoBase, 'random:', videoRandom);
-      
-      // Calculate similarity score
       let score = 0;
       
-      // Base name similarity (higher weight)
       if (imageBase === videoBase) {
         score += 0.8;
-        console.log('[LivePhotos] Base names match exactly, +0.8');
       } else {
-        // Partial match for base names
         const similarity = this.calculateStringSimilarity(imageBase, videoBase);
         score += similarity * 0.6;
-        console.log('[LivePhotos] Base name similarity:', similarity, '*', 0.6, '=', similarity * 0.6);
       }
       
-      // Random string should be different (this is expected)
       if (imageRandom !== videoRandom) {
         score += 0.2;
-        console.log('[LivePhotos] Random strings different, +0.2');
       }
       
-      console.log('[LivePhotos] Final score:', score);
       return score;
     } catch (error) {
       console.warn('[LivePhotos] Invalid regex pattern:', error);

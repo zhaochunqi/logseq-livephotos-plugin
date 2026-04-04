@@ -165,6 +165,7 @@ const getMuteIcon = (isMuted: boolean): string => {
 
 const createMuteButton = (initialMuted: boolean): HTMLElement => {
   const button = createElement("div", styles.muteButton);
+  button.setAttribute('data-live-mute', 'true');
   button.innerHTML = getMuteIcon(initialMuted);
   return button;
 };
