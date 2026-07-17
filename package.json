@@ -44,7 +44,7 @@
     "eslint": "9.39.5",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
-    "postcss": "8.5.16",
+    "postcss": "8.5.19",
     "semantic-release": "25.0.5",
     "tailwindcss": "4.3.2",
     "typescript": "5.9.3",
