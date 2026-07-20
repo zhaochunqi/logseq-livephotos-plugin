@@ -34,3 +34,11 @@ const mockLogseq = {
 (globalThis as any).parent = {
   document: document,
 };
+
+// Mock ResizeObserver (not provided by jsdom)
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+(globalThis as any).ResizeObserver = ResizeObserverMock;
