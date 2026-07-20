@@ -1,3 +1,12 @@
+## [1.6.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.6.0...v1.6.1) (2026-07-20)
+
+
+### Bug Fixes
+
+* mock ResizeObserver in test setup to fix jsdom test failures ([57fd037](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/57fd037fe76946889ce188cc375b6e720ea8bfa6))
+* resolve Live Photo video display issue in Logseq DB version ([acb51e7](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/acb51e71c82c9a49c8be945207a5a4f33f77aa75))
+* resolve Vite 8 build/test workflow failures ([7998cba](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/7998cbaa5acaec5578fb23041b0aa30104143abc))
+
 # [1.6.0](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.5.1...v1.6.0) (2026-01-20)
 
 
