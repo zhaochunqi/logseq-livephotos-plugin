@@ -8,6 +8,5 @@ export default defineConfig({
   // Makes HMR available for development
   build: {
     target: "esnext",
-    minify: "esbuild",
   },
 });
