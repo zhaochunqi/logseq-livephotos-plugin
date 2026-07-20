@@ -1,13 +1,14 @@
 import { createElement } from "../utils/dom";
-import { attachVideoEvents } from "../utils/video";
 
 const styles = {
   container: {
     position: "relative" as const,
     width: "100%",
     cursor: "pointer" as const,
-    overflow: "hidden" as const,
     borderRadius: "8px",
+  },
+  imageWrapper: {
+    width: "100%",
   },
   image: {
     width: "100%",
@@ -15,16 +16,18 @@ const styles = {
     display: "block",
     objectFit: "cover" as const,
   },
+  videoWrapper: {
+    display: "none",
+    overflow: "hidden" as const,
+    borderRadius: "8px",
+  },
   video: {
-    position: "absolute" as const,
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
+    display: "block",
+    width: "auto",
+    height: "auto",
+    minWidth: "100%",
+    minHeight: "100%",
     objectFit: "cover" as const,
-    opacity: "0",
-    transition: "opacity 0.2s ease-in-out",
-    pointerEvents: "none" as const,
   },
   badge: {
     position: "absolute" as const,
@@ -99,7 +102,6 @@ const createBadge = (): HTMLElement => {
 };
 
 export const updateBadgeForPlaying = (badge: HTMLElement, isPlaying: boolean): void => {
-  // Update badge icon
   const icon = badge.querySelector('svg') as SVGElement;
   if (icon) {
     const outerCircle = icon.querySelector('circle:first-child') as SVGCircleElement;
@@ -107,10 +109,9 @@ export const updateBadgeForPlaying = (badge: HTMLElement, isPlaying: boolean): v
     
     if (outerCircle) {
       if (isPlaying) {
-        // Make the dashed circle more visible with longer dashes
         outerCircle.setAttribute('stroke-dasharray', '8 4');
         outerCircle.setAttribute('stroke-width', '2.5');
-        outerCircle.style.stroke = '#333333'; // Dark gray for better visibility but less aggressive
+        outerCircle.style.stroke = '#333333';
         outerCircle.style.transformOrigin = 'center';
         outerCircle.style.animation = 'rotate 3s linear infinite';
       } else {
@@ -123,8 +124,7 @@ export const updateBadgeForPlaying = (badge: HTMLElement, isPlaying: boolean): v
     
     if (innerCircle) {
       if (isPlaying) {
-        // Make the inner circle more visible
-        innerCircle.style.fill = '#333333'; // Dark gray to match outer circle
+        innerCircle.style.fill = '#333333';
         innerCircle.innerHTML = '<animate attributeName="r" values="2;3;2" dur="1s" repeatCount="indefinite"/>';
         innerCircle.innerHTML += '<animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite"/>';
       } else {
@@ -135,7 +135,6 @@ export const updateBadgeForPlaying = (badge: HTMLElement, isPlaying: boolean): v
     }
   }
 
-  // Animate badge container
   if (isPlaying) {
     badge.style.transform = 'scale(1.1)';
     badge.style.animation = 'badgePulse 0.3s ease-out';
@@ -177,7 +176,6 @@ export const createLivePhotoContainer = async (
 ): Promise<HTMLElement> => {
   const container = createElement("div", styles.container);
 
-  // Normalize URLs for assets protocol using dynamic graph path
   const normalizeUrl = async (url: string): Promise<string> => {
     if (url.startsWith('../assets/') || url.startsWith('./assets/')) {
       try {
@@ -196,14 +194,32 @@ export const createLivePhotoContainer = async (
   const normalizedPhotoSrc = await normalizeUrl(photoSrc);
   const normalizedVideoSrc = await normalizeUrl(videoSrc);
 
+  const imageWrapper = createElement("div", styles.imageWrapper);
   const img = createElement("img", styles.image);
   img.src = normalizedPhotoSrc;
+  imageWrapper.appendChild(img);
 
+  const videoWrapper = createElement("div", styles.videoWrapper);
+  videoWrapper.style.display = 'none';
   const video = createElement("video", styles.video);
   video.src = normalizedVideoSrc;
   video.muted = !enableSound;
   video.playsInline = true;
   video.loop = true;
+  videoWrapper.appendChild(video);
+
+  const syncVideoSize = () => {
+    const rect = imageWrapper.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      videoWrapper.style.width = `${rect.width}px`;
+      videoWrapper.style.height = `${rect.height}px`;
+    }
+  };
+
+  img.addEventListener('load', syncVideoSize);
+
+  const resizeObserver = new ResizeObserver(syncVideoSize);
+  resizeObserver.observe(imageWrapper);
 
   const badge = createBadge();
   const isInitiallyMuted = !enableSound;
@@ -216,13 +232,47 @@ export const createLivePhotoContainer = async (
     muteButton.innerHTML = getMuteIcon(video.muted);
   });
 
-  container.appendChild(img);
-  container.appendChild(video);
+  let isHovering = false;
+  let playPromise = undefined;
+
+  container.addEventListener("mouseenter", async () => {
+    if (isHovering) return;
+    isHovering = true;
+
+    syncVideoSize();
+
+    imageWrapper.style.display = 'none';
+    videoWrapper.style.display = 'block';
+
+    try {
+      playPromise = video.play();
+      await playPromise;
+      if (isHovering) {
+        updateBadgeForPlaying(badge, true);
+      }
+    } catch (e) {
+      console.warn("Video play interrupted or failed", e);
+      if (!isHovering) {
+        videoWrapper.style.display = 'none';
+        imageWrapper.style.display = 'block';
+        updateBadgeForPlaying(badge, false);
+      }
+    }
+  });
+
+  container.addEventListener("mouseleave", () => {
+    isHovering = false;
+    video.pause();
+    video.currentTime = 0;
+    videoWrapper.style.display = 'none';
+    imageWrapper.style.display = 'block';
+    updateBadgeForPlaying(badge, false);
+  });
+
+  container.appendChild(imageWrapper);
+  container.appendChild(videoWrapper);
   container.appendChild(badge);
   container.appendChild(muteButton);
-
-  // Pass the updateBadgeForPlaying function to video events
-  attachVideoEvents(container, video, updateBadgeForPlaying);
 
   return container;
 };
