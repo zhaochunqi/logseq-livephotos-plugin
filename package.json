@@ -51,7 +51,7 @@
     "typescript": "5.9.3",
     "vite": "8.2.2",
     "vite-plugin-logseq": "1.1.2",
-    "vitest": "^4.1.2"
+    "vitest": "^5.0.0"
   },
   "logseq": {
     "id": "logseq-livephotos-plugin",
