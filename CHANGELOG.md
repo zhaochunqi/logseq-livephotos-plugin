@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.6.1...v1.6.2) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#172](https://github.com/zhaochunqi/logseq-livephotos-plugin/issues/172)) ([295469d](https://github.com/zhaochunqi/logseq-livephotos-plugin/commit/295469def1e836c401adda0b9f757e306c513c49))
+
 ## [1.6.1](https://github.com/zhaochunqi/logseq-livephotos-plugin/compare/v1.6.0...v1.6.1) (2026-07-20)
 
 
