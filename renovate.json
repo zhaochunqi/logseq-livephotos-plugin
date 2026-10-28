@@ -1,16 +1,11 @@
 {
-  "extends": ["config:recommended"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>zhaochunqi/renovate-config"],
   "packageRules": [
-    {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "requiredStatusChecks": ["test"]
-    },
     {
       "matchPackageNames": ["@logseq/libs"],
       "ignoreUnstable": false,
-      "automerge": false,
-      "requiredStatusChecks": ["test"]
+      "automerge": false
     }
   ]
 }
