@@ -35,7 +35,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 11.28.9
+          version: 12.16.1
       - name: Install dependencies
         run: pnpm install
       - name: Build
